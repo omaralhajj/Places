@@ -1,8 +1,49 @@
 package com.alhajj.omar.places.Models;
 
 public class Place {
-    public String name;
-    public String description;
-    public double latitude;
-    public double longitude;
+    private String name;
+    private String description;
+    private double latitude;
+    private double longitude;
+
+    public Place(){}
+
+    public Place(String name, String description, Double latitude, Double longitude) {
+        this.description = description;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

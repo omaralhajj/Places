@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1063839350051",
+    "firebase_url": "https://aarhvadhus2.firebaseio.com",
+    "project_id": "aarhvadhus2",
+    "storage_bucket": "aarhvadhus2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1063839350051:android:300a7332000c4e96",
+        "android_client_info": {
+          "package_name": "com.alhajj.omar.places"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1063839350051-iqofnfap60s862ot0uldltfri278l6pc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJXkLs9klFUDZicyhHrkwE25GY6XcEWmA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
