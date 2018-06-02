@@ -1,6 +1,7 @@
 package com.alhajj.omar.places.Services;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -16,15 +17,45 @@ import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
+import com.alhajj.omar.places.MainActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LocationService extends Service {
 
+    // LocationManager ref: https://developer.android.com/reference/android/location/LocationManager#requestLocationUpdates(java.lang.String,%20long,%20float,%20android.location.LocationListener)
+    private static final long minTime = 60 * 1000; // 1 min
+    private static final float minDistance = 100; // 100 m
+    private LocationManager locationManager  = null;
+
+    private class LocationListener implements android.location.LocationListener {
+        Location lastLocation;
+
+        /*public LocationListener(String provider) {
+            lastLocation = new Location(provider);
+        }*/
+
+        @Override
+        public void onLocationChanged(Location location) {
+            lastLocation.set(location);
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    }
+
     private final IBinder binder = new LocationBinder();
-
-    // reference: https://developer.android.com/reference/android/location/LocationManager
-    private Location currentLocation;
-
 
     public LocationService() {
     }
@@ -37,30 +68,21 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        /*LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                location.set(location);
+
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        LocationListener locationListener = new LocationListener();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        try {
+            if (locationManager != null) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
             }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };*/
-
-
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+        return START_STICKY;
     }
 
     public class LocationBinder extends Binder {
@@ -81,8 +103,4 @@ public class LocationService extends Service {
             locationManager.requestSingleUpdate(new Criteria(), locationListener, null);
         }
     }*/
-
-    public Location getLocation() {
-        return currentLocation;
-    }
 }

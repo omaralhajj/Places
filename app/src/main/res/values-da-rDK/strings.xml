@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name"></string>
+    <string name="distance">Afstand fra nuværende position: %1$s km</string>
+    <string name="coordinates">%1$f, %2$f</string>
+</resources>

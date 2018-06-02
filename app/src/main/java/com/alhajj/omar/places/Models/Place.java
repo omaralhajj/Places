@@ -1,6 +1,9 @@
 package com.alhajj.omar.places.Models;
 
-public class Place {
+import java.io.Serializable;
+
+//Implements serializable so that the object can be passed w/ intents
+public class Place implements Serializable {
     private String name;
     private String description;
     private double latitude;

@@ -1,13 +1,18 @@
 package com.alhajj.omar.places;
 
+import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -27,6 +32,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int REQUEST_CODE = 1;
 
     FirebaseFirestore database = FirebaseFirestore.getInstance();
 
@@ -74,8 +81,18 @@ public class MainActivity extends AppCompatActivity {
         placeAdapter = new PlaceAdapter(this, placeList);
         ListView placeListView = findViewById(R.id.placeListView);
         placeListView.setAdapter(placeAdapter);
+        placeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Place place = (Place) placeAdapter.getItem(i);
+                Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+                intent.putExtra("Place", place);
+                startActivity(intent);
+            }
+        });
     }
 
+    // Implementation taken from earlier assignment. Hash code used to setup FireBase project
     void printHashCodeToConsole()
     {
         try {
@@ -88,8 +105,32 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
             }
         } catch (PackageManager.NameNotFoundException e) {
-
+            e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Checking permissions: https://developer.android.com/training/permissions/requesting#java
+    private void checkPermissions() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])
+                    && ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[1])) {
+
+            }
+
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE);
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return TODO;
         }
     }
 }

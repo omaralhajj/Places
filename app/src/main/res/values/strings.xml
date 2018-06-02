@@ -2,5 +2,8 @@
     <string name="app_name">Places</string>
     <string name="title_activity_maps">Map</string>
 
-    <string name="coordinates">%1$d, %2$d</string>
+    <!-- Variables in string: https://stackoverflow.com/questions/5854647/how-to-put-variable-inside-string-resources -->
+    <string name="coordinates">%1$f, %2$f</string>
+    <string name="distance">Distance from current position: %1$s km</string>
+    <string name="title_activity_detail">DetailActivity</string>
 </resources>
