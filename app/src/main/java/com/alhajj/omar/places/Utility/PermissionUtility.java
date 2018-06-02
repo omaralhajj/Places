@@ -11,7 +11,7 @@ import android.support.v4.app.ActivityCompat;
 
 import com.alhajj.omar.places.Interfaces.PermissionListener;
 
-// Permission utility class inspired by https://stackoverflow.com/questions/32347532/android-m-permissions-confused-on-the-usage-of-shouldshowrequestpermissionrati (Second answer)
+// Permission utility class inspired by https://medium.com/@muthuraj57/handling-runtime-permissions-in-android-d9de2e18d18f
 public class PermissionUtility {
     private Context context;
 
@@ -30,27 +30,33 @@ public class PermissionUtility {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void checkPermission(String permission, PermissionListener permissionListener) {
         if (shouldAskPermission(permission)) {
-            /**
-             * Returns true if previously denied: https://developer.android.com/training/permissions/requesting#java
-             * Then prompts user with dialog and rationale explaining the permission needed
-             */
+             //Returns true if previously denied: https://developer.android.com/training/permissions/requesting#java
             if(((Activity) context).shouldShowRequestPermissionRationale(permission)) {
-                permissionListener.onPermissionPreviouslyDenied();
+                permissionListener.onPermissionPreviouslyDenied(permission);
             } else {
                 /**
                  * Check to see if this is the first time permission is requested.
                  * If not, then shouldShowRequestPermissionRationale must have returned true, and permission was denied
                  */
-                if(context.getSharedPreferences("PERMISSION_STORE", Context.MODE_PRIVATE).getBoolean(permission, false)) {
-                    SharedPreferences sharedPreferences = context.getSharedPreferences("PERMISSION_STORE", Context.MODE_PRIVATE);
-                    sharedPreferences.edit().putBoolean(permission, true).apply();
-                    permissionListener.onPermissionAsk();
+                if(firstTimeAsking(permission)) {
+                    disableFuturePermissionRequests(permission);
+                    permissionListener.onPermissionAsk(permission);
                 } else {
                     permissionListener.onPermissionDisabled();
                 }
             }
+        } else {
+            permissionListener.onPermissionGranted();
         }
     }
 
+    private boolean firstTimeAsking(String permission) {
+        return context.getSharedPreferences("PERMISSION_STORE", Context.MODE_PRIVATE).getBoolean(permission, true);
+    }
+
+    private void disableFuturePermissionRequests(String permission) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("PERMISSION_STORE", Context.MODE_PRIVATE);
+        sharedPreferences.edit().putBoolean(permission, false).apply();
+    }
 
 }

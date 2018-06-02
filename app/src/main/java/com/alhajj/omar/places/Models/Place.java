@@ -8,14 +8,22 @@ public class Place implements Serializable {
     private String description;
     private double latitude;
     private double longitude;
+    private String url;
+    private String address;
+    private float rating;
+    private String numberOfRatings;
 
     public Place(){}
 
-    public Place(String name, String description, Double latitude, Double longitude) {
+    public Place(String name, String description, Double latitude, Double longitude, String url, String address, float rating, String numberOfRatings) {
         this.description = description;
         this.latitude = latitude;
         this.longitude = longitude;
         this.name = name;
+        this.url = url;
+        this.address = address;
+        this.rating = rating;
+        this.numberOfRatings = numberOfRatings;
     }
 
     public String getName() {
@@ -48,5 +56,37 @@ public class Place implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public String getNumberOfRatings() {
+        return numberOfRatings;
+    }
+
+    public void setNumberOfRatings(String numberOfRatings) {
+        this.numberOfRatings = numberOfRatings;
     }
 }

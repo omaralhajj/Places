@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name"></string>
+    <string name="app_name">Places</string>
     <string name="distance">Afstand fra nuværende position: %1$s km</string>
     <string name="coordinates">%1$f, %2$f</string>
+    <string name="permission_rationale">For at bruge din placering, så skal der haves adgang til din placeringsdata</string>
+    <string name="view_in_map">Se på kort</string>
+    <string name="channel_description">Kanal til at oprette notifikationer når lokationsdata opdateres</string>
+    <string name="channel_name">Placeringsdata</string>
+    <string name="title_activity_maps">Kort</string>
+    <string name="rating">Bedømmelse: %1$s</string>
+    <string name="no_of_ratings">Antal bedømmelser på google: %1$s</string>
+
 </resources>
