@@ -1,7 +1,6 @@
 package com.alhajj.omar.places.Services;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -40,7 +39,9 @@ public class LocationService extends Service {
 
     // LocationManager ref: https://developer.android.com/reference/android/location/LocationManager#requestLocationUpdates(java.lang.String,%20long,%20float,%20android.location.LocationListener)
     private static final long minTime = 10 * 1000; // 10 sec
-    private static final float minDistance = 10; // 10 m
+    private static final float minDistance = 10; // 10 meters
+
+    Utility utility;
 
     public class LocationBinder extends Binder {
         public LocationService getService() {
@@ -52,7 +53,6 @@ public class LocationService extends Service {
 
     LocationListener locationListener;
     LocationManager locationManager;
-    Location lastKnownLocation;
 
     public LocationService() {
     }
@@ -65,23 +65,7 @@ public class LocationService extends Service {
 
     public void onCreate() {
         super.onCreate();
-        locationListener = new LocationListener();
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        saveLastKnowLocation();
-
-    }
-
-    private void saveLastKnowLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            if (locationManager != null) {
-                lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-                Utility utility = new Utility(getApplicationContext());
-                utility.saveStringToSharedPrefs(Double.toString(lastKnownLocation.getLatitude()), "latitude");
-                utility.saveStringToSharedPrefs(Double.toString(lastKnownLocation.getLongitude()), "longitude");
-            }
-        }
+        utility = new Utility(getApplicationContext());
     }
 
     @Override
@@ -94,11 +78,16 @@ public class LocationService extends Service {
     }
 
 
-    @SuppressLint("MissingPermission")
     public void initializeLocationManager() {
+        locationListener = new LocationListener();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (locationManager != null) {
             Log.d(TAG, "Initialized with: " + locationManager.getProviders(true));
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, locationListener);
+            }
         } else {
             Log.d("LocationService", "LocationManager is null");
         }
@@ -133,6 +122,9 @@ public class LocationService extends Service {
         @Override
         public void onLocationChanged(Location location) {
             Log.d(TAG, "onLocationChanged");
+
+            utility.saveStringToSharedPrefs(Double.toString(location.getLatitude()), "latitude");
+            utility.saveStringToSharedPrefs(Double.toString(location.getLongitude()), "longitude");
             Intent intent = new Intent("location-data-event");
             intent.putExtra("Latitude", location.getLatitude());
             intent.putExtra("Longitude", location.getLongitude());
@@ -156,7 +148,8 @@ public class LocationService extends Service {
         @Override
         public void onProviderDisabled(String s) {
             Log.d(TAG, "onProviderDisabled");
-
+            utility.saveStringToSharedPrefs("56.153837", "latitude");
+            utility.saveStringToSharedPrefs("10.199703", "longitude");
         }
     }
 }

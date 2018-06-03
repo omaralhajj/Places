@@ -105,6 +105,7 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder service) {
                 locationService = ((LocationService.LocationBinder)service).getService();
+                locationService.initializeLocationManager();
             }
 
             @Override

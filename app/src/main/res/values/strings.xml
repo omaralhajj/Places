@@ -3,6 +3,8 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_detail">Details</string>
 
+    <string name="google_maps_key">AIzaSyB97o55ukUwz9e_DSDIYbNKPEmMHUGLdIo</string>
+
     <string name="channel_name">Location data</string>
     <string name="channel_description">Channel to create notifications regarding location data updates</string>
 
@@ -19,4 +21,5 @@
     <string name="places_to_visit">Places to visit near you</string>
     <string name="location_updated">Location updated %1$s</string>
     <string name="location_updated_now">Location data has updated</string>
+    <string name="ok">OK</string>
 </resources>

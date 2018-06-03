@@ -27,7 +27,7 @@ public class Utility {
 
     public String getStringFromSharedPrefs(String key) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("STRING_STORE", Context.MODE_PRIVATE);
-        return sharedPreferences.getString(key, null);
+        return sharedPreferences.getString(key, "0");
     }
 
     //https://stackoverflow.com/questions/42365658/custom-marker-in-google-maps-in-android-with-vector-asset-icon

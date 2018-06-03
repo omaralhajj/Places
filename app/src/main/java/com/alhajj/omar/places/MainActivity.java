@@ -7,9 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -18,7 +16,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,8 +34,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,60 +51,37 @@ public class MainActivity extends AppCompatActivity {
     PlaceAdapter placeAdapter;
     ArrayList<Place> placeList = new ArrayList<>();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        printHashCodeToConsole();
-
-        startService(new Intent(this, LocationService.class));
-
-        PermissionUtility permissionUtility = new PermissionUtility(this);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            permissionUtility.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, permissionListener);
+    // Checking permissions: https://developer.android.com/training/permissions/requesting#java
+    PermissionListener permissionListener = new PermissionListener() {
+        @Override
+        public void onPermissionAsk(String permission) {
+            String[] permissions = new String[]{permission};
+            ActivityCompat.requestPermissions(MainActivity.this, permissions, Keys.REQUEST_FINE_LOCATION);
         }
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter("location-data-event"));
+        @Override
+        public void onPermissionPreviouslyDenied(final String permission) {
+            View parentLayout = findViewById(android.R.id.content);
+            Snackbar.make(parentLayout, getString(R.string.permission_rationale), Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.ok), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String[] permissions = new String[]{permission};
+                            ActivityCompat.requestPermissions(MainActivity.this, permissions, Keys.REQUEST_FINE_LOCATION);
+                        }
+                    }).show();
+        }
 
-        setupConnection();
-        bindToService();
+        @Override
+        public void onPermissionDisabled() {
+            Log.d(TAG, "Asking for permission disabled");
+        }
 
-        // Reference: https://firebase.google.com/docs/firestore/query-data/get-data
-        database.collection("Places").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult() ) {
-                        Place place = document.toObject(Place.class);
-                        listener.onSuccess(place);
-                    }
-                }
-            }
-        });
-
-        placeAdapter = new PlaceAdapter(this, placeList);
-        ListView placeListView = findViewById(R.id.placeListView);
-        placeListView.setAdapter(placeAdapter);
-        placeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Place place = (Place) placeAdapter.getItem(i);
-                Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
-                intent.putExtra("Place", place);
-                Log.d("Khara", "Lat: " + latitude + " Lon: " + longitude);
-                startActivity(intent);
-            }
-        });
-
-        Button viewInMaps = findViewById(R.id.viewInMapButton);
-        viewInMaps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
+        @Override
+        public void onPermissionGranted() {
+            Log.d(TAG, "Permission granted");
+        }
+    };
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -118,25 +90,6 @@ public class MainActivity extends AppCompatActivity {
             longitude = intent.getDoubleExtra("Longitude", 0);
         }
     };
-
-    // Implementation taken from earlier assignment. Hash code used to setup FireBase project
-    void printHashCodeToConsole()
-    {
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo(
-                    "com.alhajj.omar.places",
-                    PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -195,36 +148,57 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    // Checking permissions: https://developer.android.com/training/permissions/requesting#java
-    PermissionListener permissionListener = new PermissionListener() {
-        @Override
-        public void onPermissionAsk(String permission) {
-            String[] permissions = new String[]{permission};
-            ActivityCompat.requestPermissions(MainActivity.this, permissions, Keys.REQUEST_FINE_LOCATION);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        startService(new Intent(this, LocationService.class));
+
+        PermissionUtility permissionUtility = new PermissionUtility(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            permissionUtility.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, permissionListener);
         }
 
-        @Override
-        public void onPermissionPreviouslyDenied(final String permission) {
-            Log.d(TAG, "Asking again");
-            View parentLayout = findViewById(android.R.id.content);
-            Snackbar.make(parentLayout, getString(R.string.permission_rationale), Snackbar.LENGTH_INDEFINITE)
-                    .setAction("OK", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            String[] permissions = new String[]{permission};
-                            ActivityCompat.requestPermissions(MainActivity.this, permissions, Keys.REQUEST_FINE_LOCATION);
-                        }
-                    }).show();
-        }
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter("location-data-event"));
 
-        @Override
-        public void onPermissionDisabled() {
-            Log.d(TAG, "Asking for permission disabled");
-        }
+        setupConnection();
+        bindToService();
 
-        @Override
-        public void onPermissionGranted() {
-            Log.d(TAG, "Permission granted");
-        }
-    };
+
+        // Reference: https://firebase.google.com/docs/firestore/query-data/get-data
+        database.collection("Places").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Place place = document.toObject(Place.class);
+                        listener.onSuccess(place);
+                    }
+                }
+            }
+        });
+
+        placeAdapter = new PlaceAdapter(this, placeList);
+        ListView placeListView = findViewById(R.id.placeListView);
+        placeListView.setAdapter(placeAdapter);
+        placeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Place place = (Place) placeAdapter.getItem(i);
+                Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+                intent.putExtra("Place", place);
+                Log.d("Khara", "Lat: " + latitude + " Lon: " + longitude);
+                startActivity(intent);
+            }
+        });
+
+        Button viewInMaps = findViewById(R.id.viewInMapButton);
+        viewInMaps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
 }

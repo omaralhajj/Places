@@ -4,6 +4,8 @@
     <string name="title_activity_maps">Kort</string>
     <string name="title_activity_detail">Detaljer</string>
 
+    <string name="google_maps_key">AIzaSyB97o55ukUwz9e_DSDIYbNKPEmMHUGLdIo</string>
+
     <string name="distance">Afstand fra nuværende position: %1$s km</string>
     <string name="coordinates">%1$f, %2$f</string>
     <string name="permission_rationale">For at bruge din placering, så skal der haves adgang til din placeringsdata</string>
@@ -18,5 +20,6 @@
     <string name="places_to_visit">Steder at besøg i nærheden</string>
     <string name="location_updated">Placeringsdata opdateret kl %1$s</string>
     <string name="location_updated_now">Placeringsdata opdateret</string>
+    <string name="ok">OK</string>
 
 </resources>

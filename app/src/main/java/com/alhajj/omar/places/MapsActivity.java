@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.alhajj.omar.places.Interfaces.OnGetPlaceDataListener;
 import com.alhajj.omar.places.Models.Place;
@@ -74,6 +75,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
                 if (task.isComplete()) {
+                    Log.d("MAPP", "COMPLETE");
+
                     onMapReady(mMap);
                 }
             }
@@ -100,12 +103,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .setTag("user"); //To differentiate between places and user marker
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userPosition, ZOOM_CONSTANT));
         } else {
+            // In case no permission is not granted to use location, camera defaults to Aarhus
             Double defaultLatitude = 56.153837;
             Double defaultLongitude = 10.199703;
             LatLng defaultPosition = new LatLng(defaultLatitude, defaultLongitude);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(defaultPosition, ZOOM_CONSTANT));
         }
-
 
         for (int i = 0; i < placeList.size(); i++) {
             Place place = placeList.get(i);
