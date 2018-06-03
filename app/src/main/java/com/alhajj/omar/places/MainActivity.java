@@ -11,20 +11,19 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.alhajj.omar.places.Adaptors.PlaceAdapter;
 import com.alhajj.omar.places.Interfaces.OnGetPlaceDataListener;
@@ -33,9 +32,7 @@ import com.alhajj.omar.places.Models.Place;
 import com.alhajj.omar.places.Services.LocationService;
 import com.alhajj.omar.places.Utility.PermissionUtility;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -46,7 +43,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "Khara";
+    private static final String TAG = "MAIN_ACTIVITY";
 
     private Double latitude;
     private Double longitude;
@@ -64,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         printHashCodeToConsole();
+
         startService(new Intent(this, LocationService.class));
+
         PermissionUtility permissionUtility = new PermissionUtility(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             permissionUtility.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, permissionListener);
@@ -97,8 +96,16 @@ public class MainActivity extends AppCompatActivity {
                 Place place = (Place) placeAdapter.getItem(i);
                 Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
                 intent.putExtra("Place", place);
-                intent.putExtra("Latitude", latitude);
-                intent.putExtra("Longitude", longitude);
+                Log.d("Khara", "Lat: " + latitude + " Lon: " + longitude);
+                startActivity(intent);
+            }
+        });
+
+        Button viewInMaps = findViewById(R.id.viewInMapButton);
+        viewInMaps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
                 startActivity(intent);
             }
         });
@@ -144,8 +151,8 @@ public class MainActivity extends AppCompatActivity {
     private void setupConnection(){
         locationServiceConnection = new ServiceConnection() {
             @Override
-            public void onServiceConnected(ComponentName componentName, IBinder service) {
-                locationService = ((LocationService.LocationBinder)service).getService();
+            public void onServiceConnected(ComponentName componentName, IBinder iBind) {
+                locationService = ((LocationService.LocationBinder) iBind).getService();
             }
 
             @Override
@@ -159,6 +166,11 @@ public class MainActivity extends AppCompatActivity {
         bindService(new Intent(this, LocationService.class), locationServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(locationServiceConnection);
+    }
 
     /**
      * Listeners:

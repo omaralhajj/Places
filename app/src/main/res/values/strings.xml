@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Places</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_detail">Details</string>
 
     <string name="channel_name">Location data</string>
     <string name="channel_description">Channel to create notifications regarding location data updates</string>
@@ -8,9 +9,14 @@
     <!-- Variables in string: https://stackoverflow.com/questions/5854647/how-to-put-variable-inside-string-resources -->
     <string name="coordinates">%1$f, %2$f</string>
     <string name="distance">Distance from current position: %1$s km</string>
-    <string name="title_activity_detail">DetailActivity</string>
     <string name="permission_rationale">To use your location, the app needs your permission to use location data</string>
     <string name="view_in_map">View in map</string>
     <string name="rating">Rating: %1$s</string>
     <string name="no_of_ratings">Number of google ratings: %1$s</string>
+    <string name="marker_snippet">%1$s km from here</string>
+    <string name="you_are_here">You are here</string>
+    <string name="click_for_more">Click for more..</string>
+    <string name="places_to_visit">Places to visit near you</string>
+    <string name="location_updated">Location updated %1$s</string>
+    <string name="location_updated_now">Location data has updated</string>
 </resources>

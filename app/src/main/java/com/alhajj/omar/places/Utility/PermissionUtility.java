@@ -1,6 +1,5 @@
 package com.alhajj.omar.places.Utility;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,6 +12,7 @@ import com.alhajj.omar.places.Interfaces.PermissionListener;
 
 // Permission utility class inspired by https://medium.com/@muthuraj57/handling-runtime-permissions-in-android-d9de2e18d18f
 public class PermissionUtility {
+    private boolean PERMISSION_GRANTED = false;
     private Context context;
 
     public PermissionUtility(Context context) {
@@ -46,6 +46,7 @@ public class PermissionUtility {
                 }
             }
         } else {
+            PERMISSION_GRANTED = true;
             permissionListener.onPermissionGranted();
         }
     }
@@ -59,4 +60,7 @@ public class PermissionUtility {
         sharedPreferences.edit().putBoolean(permission, false).apply();
     }
 
+    public boolean isPermissionGranted() {
+        return PERMISSION_GRANTED;
+    }
 }
