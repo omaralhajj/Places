@@ -22,4 +22,5 @@
     <string name="location_updated">Location updated %1$s</string>
     <string name="location_updated_now">Location data has updated</string>
     <string name="ok">OK</string>
+    <string name="permission_needed">Permission needed</string>
 </resources>

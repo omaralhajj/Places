@@ -4,17 +4,19 @@ import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -61,15 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPermissionPreviouslyDenied(final String permission) {
-            View parentLayout = findViewById(android.R.id.content);
-            Snackbar.make(parentLayout, getString(R.string.permission_rationale), Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.ok), new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            String[] permissions = new String[]{permission};
-                            ActivityCompat.requestPermissions(MainActivity.this, permissions, Keys.REQUEST_FINE_LOCATION);
-                        }
-                    }).show();
+            showAsyncAlertDialog(permission);
         }
 
         @Override
@@ -201,4 +195,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    //Reference: previous assignments and exercises
+    public void showAsyncAlertDialog(final String permission) {
+        class showDialogAsync extends AsyncTask<Void, Void, String> {
+
+            private AlertDialog alertDialog;
+
+            @Override
+            protected String doInBackground(Void... voids) {
+                return null;
+            }
+
+            protected void onPreExecute() {
+                super.onPreExecute();
+                alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+
+                alertDialog.setTitle(getString(R.string.permission_needed));
+                alertDialog.setCanceledOnTouchOutside(false);
+                alertDialog.setMessage(getString(R.string.permission_rationale));
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.ok),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                String[] permissions = new String[]{permission};
+                                ActivityCompat.requestPermissions(MainActivity.this, permissions, Keys.REQUEST_FINE_LOCATION);
+                            }
+                        });
+
+                alertDialog.show();
+
+            }
+
+        }
+        new showDialogAsync().execute();
+
+    }
+
 }
+

@@ -21,5 +21,6 @@
     <string name="location_updated">Placeringsdata opdateret kl %1$s</string>
     <string name="location_updated_now">Placeringsdata opdateret</string>
     <string name="ok">OK</string>
+    <string name="permission_needed">Tilladelse påkrævet</string>
 
 </resources>
